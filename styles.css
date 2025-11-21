@@ -1,0 +1,139 @@
+/* Variable CSS para controlar el tamaño de la carta */
+:root {
+    --card-size: 100px;
+}
+
+/* ... (El resto de tu CSS) ... */
+
+/* Actualiza .card para usar la variable */
+.card {
+    width: var(--card-size); 
+    height: var(--card-size);
+    perspective: 1000px; 
+    cursor: pointer;
+}
+body {
+    font-family: Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+    background-color: #f0f8ff; /* Fondo claro y atractivo */
+}
+
+#game-container {
+    padding: 20px;
+    background-color: #ffffff;
+    border-radius: 15px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+#game-info {
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 20px;
+    font-size: 1.2em;
+    font-weight: bold;
+    color: #333;
+}
+
+#game-board {
+    display: grid;
+    /* 4 columnas por defecto para 16 cartas (Nivel 1) */
+    grid-template-columns: repeat(4, 1fr); 
+    gap: 10px;
+    max-width: 500px;
+    margin: auto;
+}
+
+/* Estilo para cada carta */
+.card {
+    width: 100px; /* Tamaño de carta base */
+    height: 100px;
+    perspective: 1000px; /* Necesario para el efecto 3D flip */
+    cursor: pointer;
+}
+
+.card-inner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    text-align: center;
+    transition: transform 0.6s;
+    transform-style: preserve-3d;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+}
+
+/* Estado de la carta volteada */
+.card.flipped .card-inner {
+    transform: rotateY(180deg);
+}
+
+.card-face, .card-back {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    backface-visibility: hidden; /* Oculta la parte trasera cuando está mirando hacia adelante */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 8px;
+    font-size: 2.5em; /* Tamaño del emoji */
+}
+
+/* Parte trasera de la carta (lo que se ve al inicio) */
+.card-back {
+    background-color: #4682b4; /* Azul atractivo */
+    color: white;
+}
+
+/* Parte frontal de la carta (el emoji) */
+.card-face {
+    background-color: #fff;
+    transform: rotateY(180deg);
+}
+
+/* Estilo para las cartas emparejadas (se hacen semi-transparentes) */
+.card.matched {
+    opacity: 0.5;
+    pointer-events: none; /* No se pueden clickear más */
+}
+
+/* Menú de estado */
+#status-message {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0.95);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    border-radius: 15px;
+    z-index: 10;
+}
+
+#status-message h2 {
+    color: #4682b4;
+    font-size: 2.5em;
+}
+
+#status-message button {
+    padding: 10px 20px;
+    font-size: 1.2em;
+    background-color: #ff6347; /* Botón llamativo (Naranja) */
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 15px;
+}
+
+.hidden {
+    display: none !important;
+}
