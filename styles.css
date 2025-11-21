@@ -354,3 +354,14 @@ body {
     transform: none;
     box-shadow: none;
 }
+/* --- DEBUG VISIBILIDAD VERCEL --- */
+#app-container {
+    display: flex !important; /* Asegura que el contenedor principal se muestre */
+    min-height: 100vh !important; /* Asegura que ocupe toda la altura */
+    background-color: #f0f0f0 !important; /* Establece un color claro para ver que algo aparece */
+}
+
+/* También podemos forzar el contenedor del juego */
+#game-container {
+    display: block !important;
+}
