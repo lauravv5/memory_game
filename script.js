@@ -1,4 +1,4 @@
-// --- Elementos DOM ---
+// --- Elementos DOM (sin cambios) ---
 const backgroundMusic = document.getElementById('background-music');
 const gameHeader = document.getElementById('game-header');
 const headerTitle = document.getElementById('header-title');
@@ -18,7 +18,6 @@ const menuTitle = document.getElementById('menu-title');
 const messageText = document.getElementById('message-text');
 const normalModeButton = document.getElementById('normal-mode-button');
 const hardModeButton = document.getElementById('hard-mode-button');
-const relaxModeButton = document.getElementById('relax-mode-button'); // NUEVO BOTÓN
 const startButton = document.getElementById('start-button');
 const modeSelectionDiv = document.getElementById('mode-selection');
 const highScoreDisplay = document.getElementById('high-score-display'); 
@@ -31,10 +30,9 @@ const pauseMenu = document.getElementById('pause-menu');
 const resumeButton = document.getElementById('resume-button');
 const quitButton = document.getElementById('quit-button');
 
-const usePowerupButton = document.getElementById('use-powerup-button'); // NUEVO BOTÓN
 
 // --- Variables de Estado del Juego ---
-const cardIcons = ['🍎', '🍌', '🍇', '🍉', '🍓', '🥝', '🥭', '🍍', '🍒', '🍕', '🚗', '💡', '⏰', '🚀', '🎁', '🎈', '⚙️', '💎', '⚽', '🎧', '🎸', '💻', '📷', '🔑']; 
+const cardIcons = ['🍎', '🍌', '🍇', '🍉', '🍓', '🥝', '🥭', '🍍', '🍒', '🍕', '🚗', '💡', '⏰', '🚀', '🎁', '🎈', '⚙️', '💎', '⚽', '🎧', '🎸', '💻', '📷', '🔑']; // 24 iconos para 24 pares (Nivel 9 Difícil)
 let cards = [];
 let flippedCards = []; 
 let score = 0;
@@ -44,19 +42,20 @@ let totalPairs = 0;
 let canFlip = true;
 let currentLevel = 1;
 let currentMode = null; 
-let powerUps = 0; // NUEVA VARIABLE PARA POWER-UPS
 
 let gameTimerInterval = null; 
 let gameTimeRemaining = 0; 
 let previewCountdownTimeout = null; 
 let previewOverlayInterval = null; 
 
+// Cuenta regresiva fija de 3 segundos para el aviso
 const OVERLAY_COUNTDOWN_TIME = 3; 
 
-// --- Configuración de Modos y Niveles ---
-const MIN_LIVES_NORMAL = 2;
-const MIN_LIVES_DIFICIL = 1;
+// *** AJUSTE DE VIDAS MÍNIMAS ***
+const MIN_LIVES_NORMAL = 2;   // Mínimo de 2 vidas para Normal
+const MIN_LIVES_DIFICIL = 1; // Mínimo de 1 vida para Difícil (puedes subirlo a 2 si lo deseas)
 
+// --- Configuración de Modos y Niveles (9 NIVELES AJUSTADOS) ---
 const GAME_SETTINGS = {
     normal: {
         initialLives: 5, 
@@ -93,34 +92,10 @@ const GAME_SETTINGS = {
             { level: 8, pairs: 24, size: 7 }, 
             { level: 9, pairs: 28, size: 8 }  
         ]
-    },
-    // NUEVO MODO RELAX
-    relax: {
-        initialLives: Infinity, 
-        previewTimeBase: 5, 
-        previewTimeScale: 0, // Sin reducción de tiempo
-        gameTimePerPair: Infinity, 
-        levels: [ // Se mantiene la misma progresión de Normal
-            { level: 1, pairs: 4, size: 4 },  
-            { level: 2, pairs: 6, size: 4 },
-            { level: 3, pairs: 8, size: 4 },
-            { level: 4, pairs: 10, size: 5 }, 
-            { level: 5, pairs: 12, size: 5 },
-            { level: 6, pairs: 14, size: 6 }, 
-            { level: 7, pairs: 16, size: 6 },
-            { level: 8, pairs: 18, size: 6 }, 
-            { level: 9, pairs: 20, size: 7 }  
-        ]
     }
 };
 
-// --- Funciones de Utilidad ---
-
-function updatePowerupDisplay() {
-    usePowerupButton.textContent = `💡 Pista (${powerUps})`;
-    usePowerupButton.disabled = powerUps <= 0 || !canFlip || currentMode === 'relax'; 
-    usePowerupButton.classList.toggle('hidden', currentMode === 'relax'); // Ocultar en modo relax
-}
+// --- Funciones de Récord y Audio (sin cambios) ---
 
 function getHighScore() {
     return parseInt(localStorage.getItem('memoryHighScore') || 0);
@@ -148,7 +123,7 @@ function pauseMusic() {
     backgroundMusic.pause();
 }
 
-// --- Funciones de Juego ---
+// --- Funciones de Juego (sin cambios) ---
 
 function shuffle(array) {
     for (let i = array.length - 1; i > 0; i--) {
@@ -158,7 +133,7 @@ function shuffle(array) {
 }
 
 function updateGameInfo() {
-    livesDisplay.innerHTML = `❤️ Vidas: <b>${currentMode === 'relax' ? '∞' : lives}</b>`; // Vidas infinitas en relax
+    livesDisplay.innerHTML = `❤️ Vidas: <b>${lives}</b>`;
     scoreDisplay.innerHTML = `⭐ Puntuación: <b>${score}</b>`;
 }
 
@@ -219,7 +194,6 @@ function flipCard(card) {
 
     card.classList.add('flipped');
     flippedCards.push(card);
-    updatePowerupDisplay(); // Actualizar el estado del botón Power-up
 
     if (flippedCards.length === 2) {
         canFlip = false; 
@@ -229,6 +203,8 @@ function flipCard(card) {
 
 function checkMatch() {
     const [card1, card2] = flippedCards;
+    const card1Inner = card1.querySelector('.card-inner');
+    const card2Inner = card2.querySelector('.card-inner');
     
     if (card1.dataset.icon === card2.dataset.icon) {
         card1.classList.add('matched');
@@ -242,77 +218,30 @@ function checkMatch() {
             setTimeout(() => endGame(true), 500); 
         }
     } else {
-        // En modo Relax no se pierden vidas
-        if (currentMode !== 'relax') {
-            lives--;
-            
-            const card1Inner = card1.querySelector('.card-inner');
-            const card2Inner = card2.querySelector('.card-inner');
-            card1Inner.classList.add('mismatch-shake');
-            card2Inner.classList.add('mismatch-shake');
-            
-            setTimeout(() => {
-                card1Inner.classList.remove('mismatch-shake');
-                card2Inner.classList.remove('mismatch-shake');
-            }, 300); 
-            
-            if (lives === 0) {
-                clearInterval(gameTimerInterval);
-                setTimeout(() => endGame(false), 800);
-            }
-        }
+        lives--;
         
-        // Se voltean al terminar
+        card1Inner.classList.add('mismatch-shake');
+        card2Inner.classList.add('mismatch-shake');
+        
         setTimeout(() => {
             card1.classList.remove('flipped');
             card2.classList.remove('flipped');
-        }, currentMode === 'relax' ? 500 : 300); 
+            card1Inner.classList.remove('mismatch-shake');
+            card2Inner.classList.remove('mismatch-shake');
+        }, 300); 
+        
+        if (lives === 0) {
+            clearInterval(gameTimerInterval);
+            setTimeout(() => endGame(false), 800);
+        }
     }
 
     flippedCards = [];
     canFlip = true;
     updateGameInfo();
-    updatePowerupDisplay();
 }
 
-// NUEVA FUNCIÓN DE POWER-UP
-function usePowerup() {
-    if (powerUps > 0 && canFlip && currentMode !== 'relax' && flippedCards.length === 0) {
-        // 1. Encontrar una pareja no emparejada
-        const unmatchedCards = cards.filter(card => !card.classList.contains('matched'));
-        if (unmatchedCards.length < 2) return; // No hay suficientes cartas para revelar
-
-        const iconToReveal = unmatchedCards[0].dataset.icon;
-        const pair = unmatchedCards.filter(card => card.dataset.icon === iconToReveal).slice(0, 2);
-
-        if (pair.length === 2) {
-            canFlip = false;
-            powerUps--;
-            score += 250; // Pequeño bonus por usar la pista
-
-            // 2. Revelar y marcar como emparejadas
-            pair[0].classList.add('flipped', 'matched');
-            pair[1].classList.add('flipped', 'matched');
-
-            matchesFound++;
-            
-            // 3. Actualizar displays
-            updateGameInfo();
-            updatePowerupDisplay();
-            
-            // 4. Revisar si el nivel terminó
-            if (matchesFound === totalPairs) {
-                clearInterval(gameTimerInterval);
-                setTimeout(() => endGame(true), 500); 
-            }
-            
-            canFlip = true;
-        }
-    }
-}
-
-
-// --- Mecánica de Previsualización ---
+// --- Mecánica de Previsualización (sin cambios) ---
 
 function startPreviewOverlay(visualTime) {
     let countdown = OVERLAY_COUNTDOWN_TIME;
@@ -320,6 +249,7 @@ function startPreviewOverlay(visualTime) {
     previewOverlay.classList.remove('hidden');
 
     cards.forEach(card => card.classList.add('flipped'));
+
     previewOkButton.classList.add('hidden'); 
     
     previewOverlayInterval = setInterval(() => {
@@ -336,13 +266,6 @@ function startPreviewOverlay(visualTime) {
 function startCardVisualisationTimer(time) {
     canFlip = false; 
     
-    // En modo Relax, no hay tiempo de visualización forzada, se mantiene visible hasta el primer flip
-    if (currentMode === 'relax') {
-        canFlip = true;
-        startGameTimer(); // Llama para ocultar el timer bar
-        return;
-    }
-
     previewCountdownTimeout = setTimeout(() => {
         hideAllCards();
         startGameTimer(); 
@@ -358,28 +281,21 @@ function hideAllCards() {
     });
 }
 
-// --- Temporizador de Juego ---
+// --- Temporizador de Juego (sin cambios) ---
 
 function startGameTimer() {
     clearInterval(gameTimerInterval);
-    
-    // Si es modo Relax, simplemente ocultamos la barra de tiempo y salimos
-    if (currentMode === 'relax') {
-        gameTimerBar.classList.add('hidden');
-        return;
-    }
-
-    // Lógica normal de temporizador
     gameTimerBar.classList.remove('hidden');
     
     const modeConfig = GAME_SETTINGS[currentMode];
     const levelConfig = modeConfig.levels[currentLevel - 1];
     
+    // Ajuste progresivo del tiempo por par (más difícil en niveles altos)
     let timePerPair = modeConfig.gameTimePerPair;
     if (currentLevel > 3) timePerPair -= modeConfig.gameTimeScale;
     if (currentLevel > 6) timePerPair -= modeConfig.gameTimeScale;
     
-    timePerPair = Math.max(timePerPair, 3); 
+    timePerPair = Math.max(timePerPair, 3); // Mínimo de 3 segundos por par
 
     const initialTime = levelConfig.pairs * timePerPair;
     gameTimeRemaining = initialTime;
@@ -407,7 +323,7 @@ function startGameTimer() {
     }, 1000);
 }
 
-// --- Menú de Pausa ---
+// --- Menú de Pausa (sin cambios) ---
 
 function togglePause(isPaused) {
     if (isPaused) {
@@ -430,8 +346,7 @@ function togglePause(isPaused) {
         playMusic();
         pauseMenu.classList.add('hidden');
         pauseButton.classList.remove('hidden');
-        updateHeader(`Nivel ${currentLevel} - ${currentMode === 'relax' ? 'Relax' : (currentMode === 'normal' ? 'Normal' : 'Difícil')}`, true);
-        updatePowerupDisplay();
+        updateHeader(`Nivel ${currentLevel} - ${currentMode === 'normal' ? 'Normal' : 'Difícil'}`, true);
     }
 }
 
@@ -451,36 +366,34 @@ function loadLevel() {
     clearTimeout(previewCountdownTimeout);
     clearInterval(previewOverlayInterval);
 
+
     matchesFound = 0;
     canFlip = false; 
     flippedCards = [];
 
-    // Lógica de Vidas
+    // *** MODIFICACIÓN CRÍTICA: AJUSTE DEL MÍNIMO DE VIDAS ***
     const minLives = currentMode === 'normal' ? MIN_LIVES_NORMAL : MIN_LIVES_DIFICIL;
     
-    if (currentMode === 'relax') {
-        lives = Infinity; // En modo relax
-    } else if (currentLevel === 1) {
+    if (currentLevel === 1) {
         lives = modeConfig.initialLives;
     } else {
+        // Reducir 1 vida por nivel a partir del Nivel 2
         const initialModeLives = modeConfig.initialLives;
         const livesLostByLevel = currentLevel - 1;
+        
+        // La vida no baja del mínimo establecido (2 para Normal, 1 para Difícil)
         lives = Math.max(minLives, initialModeLives - livesLostByLevel);
     }
-    
-    // Lógica de Power-ups (solo en modos con tiempo)
-    if (currentMode !== 'relax' && currentLevel % 3 === 0 && currentLevel > 0) {
-        powerUps++; // Ganas 1 power-up cada 3 niveles
-    }
+    // Si por alguna razón la vida es 0, asegurar que sea el mínimo
+    if (lives < minLives) lives = minLives;
+
 
     generateBoard(levelConfig.pairs, levelConfig.size);
     updateGameInfo();
-    updatePowerupDisplay();
     statusMessage.classList.add('hidden');
     gameTimerBar.classList.add('hidden');
 
-    const headerText = `Nivel ${currentLevel} - ${currentMode === 'relax' ? 'Relax' : (currentMode === 'normal' ? 'Normal' : 'Difícil')}`;
-    updateHeader(headerText, true);
+    updateHeader(`Nivel ${currentLevel} - ${currentMode === 'normal' ? 'Normal' : 'Difícil'}`, true);
     
     // Calcular tiempo de VISUALIZACIÓN
     let calculatedVisualTime = modeConfig.previewTimeBase - (currentLevel - 1) * modeConfig.previewTimeScale;
@@ -498,16 +411,11 @@ function endGame(status) {
     pauseMusic(); 
 
     const isNewRecord = saveHighScore(); 
-    // Limpiar Power-ups si el modo terminó o se hizo Game Over
-    if (status === 'MODE_COMPLETE' || status === false || status === 'TIME_OUT') {
-         powerUps = 0;
-    }
 
     modeSelectionDiv.classList.add('hidden');
     startButton.classList.remove('hidden');
     gameTimerBar.classList.add('hidden');
     pauseButton.classList.add('hidden');
-    usePowerupButton.classList.add('hidden'); // Ocultar el botón
 
     let message = '';
     let buttonText = '';
@@ -542,12 +450,11 @@ function endGame(status) {
     updateHeader('Game Over', false); 
 }
 
-// Muestra la pantalla inicial de selección de modo
+// Muestra la pantalla inicial de selección de modo (sin cambios)
 function showModeSelection() {
     currentMode = null; 
     currentLevel = 1;
     score = 0;
-    powerUps = 0;
     
     const highScore = getHighScore();
     highScoreDisplay.textContent = `🏆 Récord: ${highScore}`;
@@ -561,8 +468,6 @@ function showModeSelection() {
     pauseMenu.classList.add('hidden'); 
     gameBoard.innerHTML = ''; 
     updateGameInfo(); 
-    updatePowerupDisplay();
-    usePowerupButton.classList.add('hidden');
     
     document.documentElement.style.setProperty('--card-size', '100px');
     gameBoard.style.gridTemplateColumns = `repeat(4, 1fr)`;
@@ -572,7 +477,7 @@ function showModeSelection() {
 }
 
 
-// --- Event Listeners ---
+// --- Event Listeners (sin cambios) ---
 normalModeButton.addEventListener('click', () => {
     currentMode = 'normal';
     currentLevel = 1;
@@ -582,14 +487,6 @@ normalModeButton.addEventListener('click', () => {
 
 hardModeButton.addEventListener('click', () => {
     currentMode = 'dificil';
-    currentLevel = 1;
-    playMusic();
-    loadLevel();
-});
-
-// NUEVO EVENT LISTENER PARA MODO RELAX
-relaxModeButton.addEventListener('click', () => {
-    currentMode = 'relax';
     currentLevel = 1;
     playMusic();
     loadLevel();
@@ -627,9 +524,6 @@ previewOkButton.addEventListener('click', () => {
 
     startCardVisualisationTimer(calculatedVisualTime);
 });
-
-// NUEVO EVENT LISTENER PARA POWER-UP
-usePowerupButton.addEventListener('click', usePowerup);
 
 
 // Inicializa el juego mostrando la pantalla de selección de modo

@@ -3,67 +3,79 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pro Memory Match Game</title>
-    <link rel="stylesheet" href="style.css">
+    <title>🧠 Pro Memory Match - ¡Memoriza y Gana!</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
     <audio id="background-music" loop>
-        <source src="ruta/a/tu/musica.mp3" type="audio/mpeg">
+        <source src="assets/music.mp3" type="audio/mp3"> 
         Tu navegador no soporta el elemento de audio.
     </audio>
 
-    <div id="game-container">
+    <div id="app-container">
         
-        <div id="game-header">
-            <button id="back-button" class="action-button hidden">← Atrás</button>
-            <h1 id="header-title">Pro Memory Match</h1>
-            <button id="pause-button" class="action-button hidden">❚❚ Pausa</button>
+        <header id="game-header">
+            <button id="back-button" class="header-button hidden">&lt; Atrás</button>
+            <h1 id="header-title">Seleccionar modo</h1>
+            <button id="pause-button" class="header-button hidden">⏸️ Pausa</button> 
+        </header>
+
+        <div id="game-container">
             
-            <div id="powerup-container">
-                <button id="use-powerup-button" disabled title="Revela una pareja. Se obtiene cada 3 niveles." class="hidden">
-                    💡 Pista (0)
-                </button>
-            </div>
-        </div>
-
-        <div id="game-info">
-            <span id="score-display">⭐ Puntuación: 0</span>
-            <span id="lives-display">❤️ Vidas: 0</span>
-        </div>
-
-        <div id="game-timer-bar" class="hidden">
-            <div id="game-timer-progress-bar"></div>
-            <span id="game-timer-value">0 / 0</span>
-        </div>
-
-        <div id="game-board">
+            <div id="game-info">
+                <div id="lives-display"></div>
+                <div id="score-display"></div>
             </div>
 
-        <div id="preview-overlay" class="overlay hidden">
-            <h2>Tiempo para Memorizar</h2>
-            <p id="preview-countdown">3</p>
-            <button id="preview-ok-button" class="hidden">¡Listo!</button> 
-        </div>
+            <div id="game-board">
+                </div>
 
-        <div id="pause-menu" class="overlay hidden">
-            <h2 id="pause-title">Juego Pausado</h2>
-            <button id="resume-button">Reanudar</button>
-            <button id="quit-button">Abandonar y Volver al Menú</button>
-        </div>
-
-        <div id="status-message" class="overlay">
-            <h2 id="menu-title">✨ Pro Memory Match ✨</h2>
-            <p id="high-score-display"></p>
-            <p id="message-text">Selecciona un modo de juego para comenzar.</p>
-
-            <div id="mode-selection" class="menu-options">
-                <button id="normal-mode-button">Modo Normal (5 Vidas, con Tiempo)</button>
-                <button id="hard-mode-button">Modo Difícil (3 Vidas, con Tiempo)</button>
-                <button id="relax-mode-button">Modo Relax (Sin Tiempo)</button>
+            <div id="game-timer-bar" class="hidden">
+                <span id="game-timer-label">Tiempo:</span>
+                <div id="game-timer-progress-container">
+                    <div id="game-timer-progress-bar"></div>
+                </div>
+                <span id="game-timer-value"></span>
             </div>
-            
-            <button id="start-button" class="hidden">Iniciar Nivel 1</button>
+
+            <div id="status-message" class="menu-overlay">
+                <div class="menu-box">
+                    <h2 class="title" id="menu-title">✨ Pro Memory Match ✨</h2>
+                    <p id="message-text">Selecciona un modo de juego para comenzar.</p>
+                    
+                    <p id="high-score-display" class="hidden" style="font-weight: 600; color: var(--secondary-color);">
+                        🏆 Récord: 0
+                    </p>
+
+                    <div id="mode-selection" class="mode-buttons-group">
+                        <button id="normal-mode-button" class="btn primary">Modo Normal</button>
+                        <button id="hard-mode-button" class="btn secondary">Modo Difícil</button>
+                    </div>
+                    
+                    <button id="start-button" class="btn primary hidden">Continuar</button>
+                </div>
+            </div>
+
+            <div id="pause-menu" class="menu-overlay hidden">
+                <div class="menu-box">
+                    <h2 class="title">Juego Pausado ⏸️</h2>
+                    <div class="mode-buttons-group" style="flex-direction: column;">
+                        <button id="resume-button" class="btn primary">Reanudar</button>
+                        <button id="quit-button" class="btn secondary">Salir al Menú</button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="preview-overlay" class="menu-overlay hidden">
+                <div class="menu-box">
+                    <h2 class="title">Tiempo para Memorizar</h2>
+                    <p>Memoriza las posiciones de las cartas en: <span id="preview-countdown">3</span> segundos</p>
+                    <button id="preview-ok-button" class="btn primary hidden">¡OK!</button>
+                </div>
+            </div>
+
         </div>
     </div>
 
